@@ -1,0 +1,27 @@
+import Sequence from "./src/classes/Sequence.ts";
+
+if (import.meta.main) {
+  const N = Number(Deno.args[0]) ?? 19;
+  const seqLength = N + 10;
+
+  console.log(`N: ${10}, Seq: [.., ${seqLength}]`);
+
+  const seq = new Sequence();
+  seq.GenerateRandomSequence({
+    sequenceLength: seqLength,
+    minValue: 1,
+    maxValue: N + 1
+  });
+  seq.FormVariationsSeries();
+  seq.FormStatisticalDistribution();
+  seq.CalculateModa();
+  seq.CalculateMedian();
+
+  console.log({
+    // sequence: seq.Sequence,
+    variationsSeries: seq.VariationDistribution,
+    // statisticalDistribution: [...seq.StatisticalDistribution].map(sd => ({ value: sd[0], count: sd[1] })),
+    moda: seq.Moda,
+    median: seq.Median,
+  });
+}
