@@ -21,9 +21,7 @@ You can run all of the projects by simply running:
 
 ---
 
-### Projects In The Repo
-
----
+## Projects In The Repo
 
 #### Lab2: Random sequence generation, Variations series, Statistical distribution, Frequentism and Integral Frequencies
 
