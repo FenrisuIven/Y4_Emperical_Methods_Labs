@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-read main.ts",
+    "test": "deno test --allow-read main_test.ts 19"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "#types": "./src/types/index.ts"
+  }
+}

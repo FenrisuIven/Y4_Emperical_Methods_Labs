@@ -1,0 +1,25 @@
+# Deno specific
+.env
+deno.lock
+deno.jsonc.lock
+.deno_plugins/
+.deno_dir/
+/target/
+/tmp/
+
+# Editor specific
+.idea/
+.vscode/
+*.swp
+*.bak
+*.orig
+*.pyc
+
+# MacOS specific
+.DS_Store
+
+# Node.js specific (if using alongside Deno)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

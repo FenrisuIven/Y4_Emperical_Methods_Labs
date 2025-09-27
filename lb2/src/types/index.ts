@@ -1,0 +1,5 @@
+export * from './generate_random_sequence.ts'
+export * from './variations_amounts.ts'
+export * from './variations_series.ts'
+export * from './relative_frequency_series.ts'
+export * from './frequentisms_series.ts'
