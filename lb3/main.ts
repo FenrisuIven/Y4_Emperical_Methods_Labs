@@ -16,6 +16,7 @@ if (import.meta.main) {
   seq.FormStatisticalDistribution();
   seq.CalculateModa();
   seq.CalculateMedian();
+  seq.CalculateMean();
 
   console.log({
     // sequence: seq.Sequence,
@@ -23,5 +24,6 @@ if (import.meta.main) {
     // statisticalDistribution: [...seq.StatisticalDistribution].map(sd => ({ value: sd[0], count: sd[1] })),
     moda: seq.Moda,
     median: seq.Median,
+    mean: seq.Mean,
   });
 }

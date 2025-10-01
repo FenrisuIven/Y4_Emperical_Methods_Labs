@@ -95,6 +95,8 @@ export default class Sequence {
 
     let modas = [];
 
+    //TODO: Calc moda for consecutive as a mean of two neighboor values,
+    //      and not all of them at once
     const consecutiveValues = valuesWithMaxFreq
       .map(([value, _]) => value)
       .map((value, index, arr) => {
@@ -114,6 +116,7 @@ export default class Sequence {
       }).sort((a, b) => b - a);
     }
 
+    // TODO: If values are consecutive, skip both of them later on
     valuesWithMaxFreq.forEach(([value, _]) => {
       if (!modas.includes(value)){
         modas.push(value);
@@ -136,5 +139,12 @@ export default class Sequence {
     }
     this.#median = this.#variationDistribution[middle];
     return this.#median;
+  }
+
+  public CalculateMean() {
+    const sum = this.#sequence.reduce((acc, cur) => acc + cur, 0);
+    const mean = sum / this.#sequence.length;
+    this.#mean = mean;
+    return mean;
   }
 }
