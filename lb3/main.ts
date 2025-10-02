@@ -12,18 +12,20 @@ if (import.meta.main) {
     minValue: 1,
     maxValue: N + 1
   });
-  seq.FormVariationsSeries();
+  seq.FormVariationsDistribution();
   seq.FormStatisticalDistribution();
   seq.CalculateModa();
   seq.CalculateMedian();
   seq.CalculateMean();
 
   console.log({
-    // sequence: seq.Sequence,
+    sequence: seq.Sequence,
     variationsSeries: seq.VariationDistribution,
-    // statisticalDistribution: [...seq.StatisticalDistribution].map(sd => ({ value: sd[0], count: sd[1] })),
+    statisticalDistribution: [...seq.StatisticalDistribution],
     moda: seq.Moda,
     median: seq.Median,
     mean: seq.Mean,
+    desmosDistribution: [...seq.StatisticalDistribution].map(([k, v]) => '(' + k + ',' + v + ')').join(', '),
+    desmosModa: seq.Moda.map(m => '(' + m + ',0)').join(', ')
   });
 }

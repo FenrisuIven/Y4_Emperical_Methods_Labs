@@ -4,13 +4,16 @@ import { GenerateSequenceParams } from "#types";
 
 export default class Sequence {
   #sequence: number[]      // Розподіл
-  #moda: number | number[] // Мода
+  #moda: number[]          // Мода
   #median: number          // Медіана
   #mean: number            // Середнє арифметичне
 
   #variationDistribution: number[] // Варіаційний розподіл
   #statisticalDistribution: Map<number, number> // Статистичний розподіл
 
+  set Sequence(seq: number[]) {
+    this.#sequence = seq
+  }
   get Sequence() {
     return this.#sequence
   }
@@ -33,7 +36,7 @@ export default class Sequence {
 
   constructor() {
     this.#sequence = []
-    this.#moda = 0
+    this.#moda = []
     this.#median = 0
     this.#mean = 0
 
@@ -65,7 +68,7 @@ export default class Sequence {
     return sequence;
   }
 
-  public FormVariationsSeries(): number[] {
+  public FormVariationsDistribution(): number[] {
     const sorted = [...this.#sequence].sort((a, b) => a - b);
     this.#variationDistribution = sorted;
     return sorted;
@@ -81,51 +84,54 @@ export default class Sequence {
   }
 
   public CalculateModa(): number | number[] {
-    const maxFreq = Math.max(...this.#statisticalDistribution.values());
-    const valuesWithMaxFreq = Map.groupBy(this.#statisticalDistribution, ([, freq]) => freq === maxFreq).get(true)
+    const unsortedDistribution: [number, number][] = []
 
-    if (!valuesWithMaxFreq) {
-      this.#moda = 0;
-      return 0;
-    }
-    if (valuesWithMaxFreq.length === 1) {
-      this.#moda = valuesWithMaxFreq[0][0];
-      return this.#moda;
-    }
-
-    let modas = [];
-
-    //TODO: Calc moda for consecutive as a mean of two neighboor values,
-    //      and not all of them at once
-    const consecutiveValues = valuesWithMaxFreq
-      .map(([value, _]) => value)
-      .map((value, index, arr) => {
-        if (value === arr[index - 1] + 1) return [arr[index - 1], value];
-        return null;
-      })
-      .filter(pair => pair !== null);
-
-    console.log({ valuesWithMaxFreq, consecutiveValues });
-
-    if (consecutiveValues.length === 0) {
-      modas = valuesWithMaxFreq.map(([value, _]) => value).sort((a, b) => b - a);
-    }
-    else {
-      modas = consecutiveValues.map(pair => {
-        return (pair[0] + pair[1]) / 2
-      }).sort((a, b) => b - a);
-    }
-
-    // TODO: If values are consecutive, skip both of them later on
-    valuesWithMaxFreq.forEach(([value, _]) => {
-      if (!modas.includes(value)){
-        modas.push(value);
+    let current = 0;
+    this.#variationDistribution.forEach((key, index) => {
+      const value = this.#statisticalDistribution.get(key);
+      if (index === 0) {
+        unsortedDistribution.unshift([key - 1, value ?? 0]);
+      }
+      if (key !== current) {
+        current = key;
+        if (value){
+          unsortedDistribution.push([key, value]);
+        }
+      }
+      if (index === this.#variationDistribution.length - 1) {
+        unsortedDistribution.push([key + 1, value ?? 0]);
       }
     })
-    modas.sort((a, b) => b - a);
-    this.#moda = modas
-    return this.#moda;
 
+    const modas: number[] = []
+    let skip = false
+    for (let i = 1; i < unsortedDistribution.length - 1; i++) {
+      if (skip) {
+        skip = false;
+        continue;
+      }
+      const prev = unsortedDistribution[i - 1];
+      const current = unsortedDistribution[i];
+      const next = unsortedDistribution[i + 1];
+
+      if (current[1] > prev[1] && current[1] > next[1]) { // Пік
+        modas.push(current[0]);
+      }
+      else if (current[1] === next[1] && current[1] > prev[1]) { // Плато з наступним, та попередній менший
+        if (i === unsortedDistribution.length - 2) { // Якщо плато в кінці
+          modas.push(current[0]);
+        } else {
+          modas.push((current[0] + next[0]) / 2);
+        }
+        skip = true;
+      }
+      else if (current[1] === prev[1] && current[1] > next[1]) {  // Плато з попереднім, та наступний менший
+        modas.push((current[0] + prev[0]) / 2);
+      }
+    }
+
+    this.#moda = modas;
+    return modas;
   }
 
   public CalculateMedian(): number {
