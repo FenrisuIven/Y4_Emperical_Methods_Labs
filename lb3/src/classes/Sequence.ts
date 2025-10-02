@@ -4,7 +4,10 @@ import { GenerateSequenceParams } from "#types";
 
 export default class Sequence {
   #sequence: number[]      // Розподіл
-  #moda: number[]          // Мода
+  #moda: {                 // Моди
+    primary: Array<[number, number]>,
+    secondary: Array<[number, number]>
+  }
   #median: number          // Медіана
   #mean: number            // Середнє арифметичне
 
@@ -36,7 +39,7 @@ export default class Sequence {
 
   constructor() {
     this.#sequence = []
-    this.#moda = []
+    this.#moda = { primary: [], secondary: [] }
     this.#median = 0
     this.#mean = 0
 
@@ -83,7 +86,10 @@ export default class Sequence {
     return distributions;
   }
 
-  public CalculateModa(): number | number[] {
+  public CalculateModa(): {
+    primaryModas: Array<[number, number]>,
+    secondaryModas: Array<[number, number]>
+  } {
     const unsortedDistribution: [number, number][] = []
 
     let current = 0;
@@ -103,35 +109,71 @@ export default class Sequence {
       }
     })
 
-    const modas: number[] = []
+    const primaryModas: Array<[number, number]> = [];
+    const secondaryModas: Array<[number, number]> = [];
+
+    const addModa = (moda: {variant: number, count: number}) => {
+      const { variant, count } = moda;
+
+      if (primaryModas.length === 0) {
+        primaryModas.push([variant, count]);
+        return;
+      }
+
+      const primaryModaCount = primaryModas[0][1];
+
+      if (primaryModaCount && count) {
+        switch (true) {
+          case count > primaryModaCount:
+            secondaryModas.push(...primaryModas);
+            primaryModas.length = 0;
+            primaryModas.push([variant, count]);
+            return;
+          case count === primaryModaCount:
+            primaryModas.push([variant, count]);
+            return;
+          case count < primaryModaCount:
+            secondaryModas.push([variant, count]);
+            return;
+        }
+      }
+    }
+
     let skip = false
     for (let i = 1; i < unsortedDistribution.length - 1; i++) {
-      if (skip) {
-        skip = false;
-        continue;
-      }
+
       const prev = unsortedDistribution[i - 1];
       const current = unsortedDistribution[i];
       const next = unsortedDistribution[i + 1];
 
       if (current[1] > prev[1] && current[1] > next[1]) { // Пік
-        modas.push(current[0]);
+        addModa({ variant: current[0], count: current[1] });
       }
       else if (current[1] === next[1] && current[1] > prev[1]) { // Плато з наступним, та попередній менший
         if (i === unsortedDistribution.length - 2) { // Якщо плато в кінці
-          modas.push(current[0]);
+          addModa({ variant: current[0], count: current[1] });
         } else {
-          modas.push((current[0] + next[0]) / 2);
+          addModa({ variant: (current[0] + next[0]) / 2, count: current[1] });
         }
-        skip = true;
+        skip = true; // Якщо на даному елементі вже плато з наступним,
+                     // це саме плато буде і на наступному елементі, тож пропускаємо його
       }
       else if (current[1] === prev[1] && current[1] > next[1]) {  // Плато з попереднім, та наступний менший
-        modas.push((current[0] + prev[0]) / 2);
+        if (skip) {     // Пропускаємо лише тут і якщо дійсно досі плато,
+          skip = false; // оскільки мода вийде рівною попередній
+          continue;
+        }
+        if (i === 1) { // Якщо плато на початку
+          addModa({ variant: current[0], count: current[1] });
+        } else {
+          addModa({ variant: (current[0] + prev[0]) / 2, count: current[1] });
+        }
       }
     }
 
-    this.#moda = modas;
-    return modas;
+    this.#moda.primary = primaryModas.sort((a, b) => b[0] - a[0]);
+    this.#moda.secondary = secondaryModas.sort((a, b) => b[0] - a[0]);
+    return { primaryModas, secondaryModas };
   }
 
   public CalculateMedian(): number {

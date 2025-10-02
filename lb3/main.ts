@@ -1,7 +1,7 @@
 import Sequence from "./src/classes/Sequence.ts";
 
 if (import.meta.main) {
-  const N = Number(Deno.args[0]) ?? 19;
+  const N = Number(Deno.args[0]) || 19;
   const seqLength = N + 10;
 
   console.log(`N: ${10}, Seq: [.., ${seqLength}]`);
@@ -26,6 +26,7 @@ if (import.meta.main) {
     median: seq.Median,
     mean: seq.Mean,
     desmosDistribution: [...seq.StatisticalDistribution].map(([k, v]) => '(' + k + ',' + v + ')').join(', '),
-    desmosModa: seq.Moda.map(m => '(' + m + ',0)').join(', ')
+    desmosPrimaryModa: seq.Moda.primary.map(m => '(' + m + ')').join(', '),
+    desmosSecondaryModa: seq.Moda.secondary.map(m => '(' + m + ')').join(', ')
   });
 }
