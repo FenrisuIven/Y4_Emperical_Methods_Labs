@@ -1,15 +1,70 @@
-import {Chart} from 'react-chartjs-2';
+import {useMemo} from "react";
 
-function App({noisedPoints}:{noisedPoints: [number, number][]}) {
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const options = {
+  responsive: true,
+  interaction: {
+    mode: 'index' as const,
+    intersect: false,
+  },
+  scales: {
+    y: {
+      type: 'linear' as const,
+      display: true,
+      beginAtZero: true,
+    },
+    x: {
+      type: 'linear' as const,
+      display: true,
+      beginAtZero: true
+    },
+  },
+};
+
+function App({ points, noisedPoints }:{
+  points: Array<[number, number]>,
+  noisedPoints: Array<[number, number]>
+}) {
+  const noised = useMemo(() => noisedPoints, [])
+  const normal = useMemo(() => points, [])
+
   return (
     <>
-      <Chart
-        type='scatter'
+      <Line
+        options={options}
         data={
           {
             datasets: [{
               label: 'Noised Points',
-              data: noisedPoints,
+              data: noised,
+              borderColor: 'rgb(255, 99, 132, 0.5)',
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }, {
+              label: 'Points',
+              data: normal,
+              borderColor: 'rgba(53, 162, 235, 0.5)',
+              backgroundColor: 'rgba(53, 162, 235, 0.5)',
             }]
           }
       }

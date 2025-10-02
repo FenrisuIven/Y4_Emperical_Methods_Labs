@@ -13,7 +13,7 @@ const LR = new LinearRegression({
   slope: k,
   offset: b
 });
-LR.CalculatePoints();
+LR.CalculatePoints({start: -14, end: 10});
 LR.CalculateNoisedPoints();
 
 console.log({ eq: LR.equation, str: LR.equationString });
@@ -23,6 +23,6 @@ console.log(LR.CalculateLinearRegressionCoefficients());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App noisedPoints={LR.NoisedPoints}/>
+    <App points={LR.Points} noisedPoints={LR.NoisedPoints}/>
   </StrictMode>,
 )

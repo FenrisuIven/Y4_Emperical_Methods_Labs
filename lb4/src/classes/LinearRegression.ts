@@ -18,6 +18,9 @@ export class LinearRegression {
     public get NoisedPoints(){
         return this._noisedPoints;
     }
+    public get Points(){
+        return this._calculatedPoints;
+    }
     public get desmosCalculatedPoints(){
         return this._calculatedPoints.map(point => `(${point[0]}, ${point[1]})`).join(', ');
     }
