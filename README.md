@@ -10,7 +10,7 @@ A repository for all of the programs that I have developed for the Emperical Met
 You can run all of the projects by simply running:
 
 ```bash
-  deno run --allow-read --allow-run --allow-sys --alow-env main.ts 25
+  deno run main.ts <num>
 ```
 
 ---
@@ -31,8 +31,16 @@ You can run all of the projects by simply running:
 
 ---
 
-#### Lab2: RND Sequence, Moda, Median and Mean of the sequence
+#### Lab3: RND Sequence, Moda, Median and Mean of the sequence
 
-> 26.09 -- ...
+> 26.09 -- 02.10.2025
 
-<sub>Is being developed with Deno, with no libraries currently being used</sub>
+<sub>Developed with Deno and no third-party libraries used</sub>
+
+---
+
+#### Lab4: Discrete line presentation, noising and regression calculation
+
+> 02.10 -- ...
+
+<sub>Is being developed as Vite app, with the usage of charting library</sub>
