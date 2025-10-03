@@ -180,15 +180,15 @@ export default class Sequence {
   }
 
   public CalculateMedian(): number {
-    const middle = Math.floor(this.#variationDistribution.length / 2);
-    if (this.#variationDistribution.length % 2 === 0) {
-      const mid1 = this.#variationDistribution[middle - 1];
-      const mid2 = this.#variationDistribution[middle];
+    const middle = Math.floor(this.#sequence.length / 2);
+    if (this.#sequence.length % 2 === 0) {
+      const mid1 = this.#sequence[middle - 1];
+      const mid2 = this.#sequence[middle];
       const median = (mid1 + mid2) / 2;
       this.#median = median;
       return median;
     }
-    this.#median = this.#variationDistribution[middle];
+    this.#median = this.#sequence[middle];
     return this.#median;
   }
 
