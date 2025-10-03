@@ -42,12 +42,14 @@ const options = {
   },
 };
 
-function App({ points, noisedPoints }:{
+function App({ points, noisedPoints, regressedPoints }:{
   points: Array<[number, number]>,
-  noisedPoints: Array<[number, number]>
+  noisedPoints: Array<[number, number]>,
+  regressedPoints?: Array<[number, number]>
 }) {
   const noised = useMemo(() => noisedPoints, [])
   const normal = useMemo(() => points, [])
+  const regressed = useMemo(() => regressedPoints || [], [])
 
   return (
     <>
@@ -65,6 +67,11 @@ function App({ points, noisedPoints }:{
               data: normal,
               borderColor: 'rgba(53, 162, 235, 0.5)',
               backgroundColor: 'rgba(53, 162, 235, 0.5)',
+            }, {
+              label: 'Regressed Line',
+              data: regressed,
+              borderColor: 'rgba(75, 250, 175, 0.5)',
+              backgroundColor: 'rgba(75, 250, 175, 0.5)',
             }]
           }
       }

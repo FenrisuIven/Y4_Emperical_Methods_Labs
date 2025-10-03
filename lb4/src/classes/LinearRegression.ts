@@ -1,4 +1,5 @@
-import {type MathNode, parse} from "mathjs"
+import { type MathNode, parse } from "mathjs"
+import { createNoise2D } from 'simplex-noise'
 
 export class LinearRegression {
     private _equation: MathNode;
@@ -70,13 +71,18 @@ export class LinearRegression {
     }
 
     public CalculateNoisedPoints(args?: {noiseStd: number}){
-        const { noiseStd } = args || {};
+        const { noiseStd: std } = args || {};
         const noisedPoints: Array<[number, number]> = [];
-        const std = noiseStd || (this._N / 5);
+        const noiseMaxValue = std || (this._N / 5);
+        const noise = createNoise2D();
+
         for (let i = 0; i < this._calculatedPoints.length; i++) {
             const [x, y] = this._calculatedPoints[i];
-            const noise = (Math.random() - 0.5) * std;
-            noisedPoints.push([x, y + noise]);
+            const noiseMinValue = (x / this._calculatedPoints.length) * noiseMaxValue;
+            const value = noise(noiseMinValue, noiseMaxValue);
+
+            const yNoise = value * noiseMaxValue;
+            noisedPoints.push([x, y + yNoise]);
         }
 
         this._noisedPoints = noisedPoints;
@@ -86,13 +92,34 @@ export class LinearRegression {
     public CalculateLinearRegressionCoefficients(useNoised: boolean = true) {
         const points = useNoised ? this._noisedPoints : this._calculatedPoints;
         const n = points.length;
-        const sumX = points.reduce((acc, curr)=>acc + curr[0], 0);
-        const sumY = points.reduce((acc, curr)=>acc + curr[1], 0);
-        const sumXY = points.reduce((acc, curr, i) => acc + curr[0] * points[i][1], 0);
-        const sumX2 = points.reduce((acc, curr) => acc + curr[0] * curr[0], 0);
 
-        const k = (n*sumXY - sumX*sumY) / (n*sumX2 - sumX*sumX);
-        const b = (sumY - k*sumX) / n;
+        let sumX = 0;
+        let sumY = 0;
+        let sumX2 = 0;
+        let sumY2 = 0;
+        let sumXY = 0;
+
+        points.forEach(point => {
+            const [x, y] = point;
+            sumX += x;
+            sumY += y;
+            sumX2 += x * x;
+            sumY2 += y * y;
+            sumXY += x * y;
+        })
+
+        const avgX = sumX / n;
+        const avgY = sumY / n;
+        const avgXY = sumXY / n;
+        const avgX2 = sumX2 / n;
+        const avgY2 = sumY2 / n;
+
+        const Sx = Math.sqrt(avgX2 - (avgX * avgX));
+        const Sy = Math.sqrt(avgY2 - (avgY * avgY));
+        const r = (avgXY - avgX * avgY) / (Sx * Sy);
+
+        const k = r * (Sy / Sx);
+        const b = avgY - k * avgX;
 
         return { k, b };
     }
