@@ -159,8 +159,8 @@ export default class Sequence {
                      // це саме плато буде і на наступному елементі, тож пропускаємо його
       }
       else if (current[1] === prev[1] && current[1] > next[1]) {  // Плато з попереднім, та наступний менший
-        if (skip) {     // Пропускаємо лише тут і якщо дійсно досі плато,
-          skip = false; // оскільки мода вийде рівною попередній
+        if (skip) {
+          skip = false;
           continue;
         }
         if (i === 1) { // Якщо плато на початку
@@ -168,6 +168,9 @@ export default class Sequence {
         } else {
           addModa({ variant: (current[0] + prev[0]) / 2, count: current[1] });
         }
+      }
+      else if (current[1] === prev[1] && current[1] === next[1]) { // Плато з обома сусідами
+        skip = false;
       }
     }
 

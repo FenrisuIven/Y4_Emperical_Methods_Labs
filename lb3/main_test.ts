@@ -24,7 +24,7 @@ Deno.test(function modaTest() {
   assertEquals([...seq.StatisticalDistribution], dist1);
 
   seq.CalculateModa();
-  assertEquals(seq.Moda, [3.5, 6, 9]);
+  assertEquals(seq.Moda, { primary: [[6,7]], secondary: [[9,4],[3.5,3]] });
 });
 
 Deno.test(function medianTest() {
@@ -38,7 +38,6 @@ Deno.test(function medianTest() {
 })
 
 Deno.test(function meanTest() {
-
   const sequence1 = new Sequence();
   sequence1.Sequence = seq1;
   sequence1.CalculateMean();
