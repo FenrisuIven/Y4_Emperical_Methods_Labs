@@ -1,14 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-import Distribution from "./classes/Distribution.ts";
 
-const dist = new Distribution(19 * 20);
-const logDist = dist.GenerateLogDistribution();
-console.log(logDist);
+const N = 19;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App logDist={logDist}/>
+    <App num={N} distributionSize={20 * N}/>
   </StrictMode>,
 )
