@@ -9,7 +9,6 @@ export default class Distribution {
         this.exponentialDistribution = []
     }
 
-    // Генерація нормального розподілу (метод Бокса-Мюллера)
     public GenerateNormal({ mean, stdDev, count, maxRange }:{
         mean: number,     // середнє значення
         stdDev: number,   // стандартне відхилення
@@ -19,10 +18,10 @@ export default class Distribution {
         const dist: number[] = [];
 
         while (dist.length < count) {
-            let u = 0, v = 0;
-            while(u === 0) u = Math.random();
+            let r = 0, v = 0;
+            while(r === 0) r = Math.random();
             while(v === 0) v = Math.random();
-            const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            const z = Math.sqrt(-2.0 * Math.log(r)) * Math.cos(2.0 * Math.PI * v);
             const value = z * stdDev + mean;
 
             if (value >= 0 && value <= maxRange) {
@@ -34,7 +33,6 @@ export default class Distribution {
         return dist;
     }
 
-    // Генерація показникового розподілу
     public GenerateExponential({ lambda, count, maxRange }:{
         lambda: number,   // параметр розподілу
         count: number,    // кількість елементів
