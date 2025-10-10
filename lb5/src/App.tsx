@@ -1,65 +1,52 @@
 import Histogram from './Histogram';
-
-// Генерація нормального розподілу (метод Бокса-Мюллера)
-function generateNormal(
-  mean: number,     // середнє значення
-  stdDev: number,   // стандартне відхилення
-  count: number,    // кількість елементів
-  maxRange: number  // максимальне значення
-): number[] {
-  const data: number[] = [];
-
-  while (data.length < count) {
-    let u = 0, v = 0;
-    while(u === 0) u = Math.random();
-    while(v === 0) v = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    const value = z * stdDev + mean;
-
-    if (value >= 0 && value <= maxRange) {
-      data.push(value);
-    }
-  }
-
-  return data;
-}
-
-// Генерація показникового розподілу
-function generateExponential(
-  lambda: number,   // параметр розподілу
-  count: number,    // кількість елементів
-  maxRange: number  // максимальне значення
-): number[] {
-  const data: number[] = [];
-
-  while (data.length < count) {
-    const value = -Math.log(1 - Math.random()) / lambda;
-
-    if (value >= 0 && value <= maxRange) {
-      data.push(value);
-    }
-  }
-
-  return data;
-}
-
+import Distribution from "./classes/Distribution.ts";
 
 const App = ({ num, distributionSize, maxRange }:{
   num: number,
   distributionSize: number,
   maxRange?: number
 }) => {
-  const normalData = generateNormal(num / 2, num / 6, distributionSize, maxRange || num);
-  const exponentialData = generateExponential(2 / num, distributionSize, maxRange || num);
+  const dist = new Distribution(distributionSize);
+
+  const normalData = dist.GenerateNormal({
+    mean: num / 2,
+    stdDev: num / 6,
+    count: distributionSize,
+    maxRange: maxRange || num
+  });
+  const exponentialData = dist.GenerateExponential({
+    lambda: 2 / num,
+    count: distributionSize,
+    maxRange: maxRange || num,
+  });
 
   return (
     <div className="App">
       <div className="chart-container">
         <div className="chart">
-          <Histogram data={normalData} title="Нормальний розподіл" range={maxRange || num} />
+          <Histogram data={[{
+            data: normalData,
+            range: maxRange || num,
+            color: 'rgba(53, 162, 235, 0.5)'
+          }, {
+            data: exponentialData,
+            range: maxRange || num,
+            color: 'rgba(255, 99, 132, 0.5)'
+          }]} title="Показниковий та нормальний розподіли"/>
         </div>
         <div className="chart">
-          <Histogram data={exponentialData} title="Показниковий розподіл" range={maxRange || num} />
+          <Histogram data={[{
+            data: normalData,
+            range: maxRange || num,
+            color: 'rgba(53, 162, 235, 0.5)'
+          }]} title="Нормальний розподіл"/>
+        </div>
+        <div className="chart">
+          <Histogram data={[{
+            data: exponentialData,
+            range: maxRange || num,
+            color: 'rgba(255, 99, 132, 0.5)'
+          }]} title='Показниковий розподіл' />
         </div>
       </div>
     </div>

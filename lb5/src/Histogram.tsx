@@ -5,39 +5,50 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 interface HistogramProps {
   data: number[];
-  title: string;
   range: number;
+  color: string;
 }
 
-const Histogram = ({ data, title, range }: HistogramProps) => {
+const Histogram = ({ data, title }: { data: HistogramProps[], title: string }) => {
   const binCount = 20; // Кількість стовпців
-  const binSize = range / binCount;
-  const bins: { [key: number]: number } = {};
 
-  for (let i = 0; i <= binCount; i++) {
-    bins[i] = 0;
-  }
+  let labels: string[] | null = null;
+  const chartData:{ datasets: {
+      label: string,
+      data: number[],
+      backgroundColor: string,
+      borderColor: string,
+      borderWidth: number,
+    }[] } = { datasets: [] }
 
-  data.forEach(value => {
-    const binIndex = Math.floor(value / binSize);
-    if (bins[binIndex] !== undefined) {
-      bins[binIndex]++;
+  data.forEach((dist, idx) => {
+    const binSize = dist.range / binCount;
+    const bins: { [key: number]: number } = {};
+
+    for (let i = 0; i <= binCount; i++) {
+      bins[i] = 0;
     }
-  });
 
-  const labels = Object.keys(bins).map(key => `${(Number(key) * binSize).toFixed(1)}-${((Number(key) + 1) * binSize).toFixed(1)}`);
-  const counts = Object.values(bins);
+    dist.data.forEach(value => {
+      const binIndex = Math.floor(value / binSize);
+      if (bins[binIndex] !== undefined) {
+        bins[binIndex]++;
+      }
+    });
 
-  const chartData = {
-    labels,
-    datasets: [{
-      label: 'Кількість елементів',
+
+    if (!labels){
+      labels = Object.keys(bins).map(key => `${(Number(key) * binSize).toFixed(1)}-${((Number(key) + 1) * binSize).toFixed(1)}`);
+    }
+    const counts = Object.values(bins);
+    chartData.datasets.push({
+      label: `Кількість елементів розподілу №${idx + 1}`,
       data: counts,
-      backgroundColor: 'rgba(54, 162, 235, 0.5)',
-      borderColor: 'rgb(54, 162, 235)',
+      backgroundColor: dist.color,
+      borderColor: dist.color,
       borderWidth: 1,
-    }],
-  };
+    })
+  })
 
   const options = {
     responsive: true,
@@ -47,12 +58,16 @@ const Histogram = ({ data, title, range }: HistogramProps) => {
       },
       title: {
         display: true,
-        text: title,
-      },
+        text: title
+      }
     },
   };
 
-  return <Bar data={chartData} options={options} />;
+  if (!labels) {
+    labels = [];
+  }
+
+  return <Bar data={{labels, ...chartData}} options={options} />;
 };
 
 export default Histogram;

@@ -1,19 +1,56 @@
 export default class Distribution {
     distributionSize: number;
-    distribution: number[];
+    normalDistribution: number[];
+    exponentialDistribution: number[];
 
     constructor(distSize: number) {
         this.distributionSize = distSize || 19;
-        this.distribution = []
+        this.normalDistribution = []
+        this.exponentialDistribution = []
     }
 
-    public GenerateLogDistribution() {
-        const result = [];
-        for (let i = 0; i < this.distributionSize; i++) {
-            const x = i / (this.distributionSize - 1);         // from 0 to 1
-            const logX = Math.log10(1 + 9 * x); // logarithmic curve
-            result.push(logX * this.distributionSize);
+    // Генерація нормального розподілу (метод Бокса-Мюллера)
+    public GenerateNormal({ mean, stdDev, count, maxRange }:{
+        mean: number,     // середнє значення
+        stdDev: number,   // стандартне відхилення
+        count: number,    // кількість елементів
+        maxRange: number  // максимальне значення
+    }): number[] {
+        const dist: number[] = [];
+
+        while (dist.length < count) {
+            let u = 0, v = 0;
+            while(u === 0) u = Math.random();
+            while(v === 0) v = Math.random();
+            const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            const value = z * stdDev + mean;
+
+            if (value >= 0 && value <= maxRange) {
+                dist.push(value);
+            }
         }
-        return result;
+
+        this.normalDistribution = dist;
+        return dist;
+    }
+
+    // Генерація показникового розподілу
+    public GenerateExponential({ lambda, count, maxRange }:{
+        lambda: number,   // параметр розподілу
+        count: number,    // кількість елементів
+        maxRange: number  // максимальне значення}
+    }): number[] {
+        const dist: number[] = [];
+
+        while (dist.length < count) {
+            const value = -Math.log(1 - Math.random()) / lambda;
+
+            if (value >= 0 && value <= maxRange) {
+                dist.push(value);
+            }
+        }
+
+        this.exponentialDistribution = dist;
+        return dist;
     }
 }
